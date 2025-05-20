@@ -53,11 +53,10 @@ QuicEchoServer::GetTypeId (void)
     .SetGroupName ("Applications")
     .AddConstructor<QuicEchoServer> ()
     .AddAttribute ("Port", "Port on which we listen for incoming packets.",
-                   UintegerValue (9), // 监听端口号, 默认值为 9
-                   // 关联到成员变量 m_port
+                   UintegerValue (9),
                    MakeUintegerAccessor (&QuicEchoServer::m_port),
                    MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("StreamId", // 流 ID
+    .AddAttribute ("StreamId",
                    "Identifier of the stream to be used in the QUIC connection",
                    UintegerValue (2),
                    MakeUintegerAccessor (&QuicEchoServer::GetStreamId,

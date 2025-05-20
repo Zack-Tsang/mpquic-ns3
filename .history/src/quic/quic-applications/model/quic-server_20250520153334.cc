@@ -190,8 +190,8 @@ QuicServer::StartApplication (void)
 
 /**
  * zhiy zeng: 停止QUIC Server应用程序
-  * 移除接收回调
-  * 不主动关闭 socket（由系统自动管理
+  * 取消未执行的发送事件
+  * 关闭 socket
  */
 void
 QuicServer::StopApplication ()
@@ -204,9 +204,6 @@ QuicServer::StopApplication ()
     }
 }
 
-/**
- * zhiy zeng: 循环接收所有可用数据包
- */
 void
 QuicServer::HandleRead (Ptr<Socket> socket)
 {

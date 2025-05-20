@@ -23,13 +23,6 @@
 #include "ns3/uinteger.h"
 #include "ns3/string.h"
 
-/**
- * NS-3 中 QUIC 协议的客户端和服务器辅助类，用于简化在仿真中
- * 创建 QUIC 客户端和服务端应用程序的过程。它们属于 ns3 命名
- * 空间，使用了 NS-3 的对象工厂机制（ObjectFactory）来实例化
- *  QUIC 应用程序。
- */
-
 namespace ns3 {
 
 /**
@@ -128,7 +121,7 @@ QuicClientHelper::SetAttribute (std::string name, const AttributeValue &value)
 
 /**
  * zhiy zeng: 在给定节点上安装 QUIC 客户端应用
-  * 返回 所有客户端组成的容器，可用于后续控制或查询状态
+  * 返回 ApplicationContainer，可用于后续控制或查询状态
  */
 ApplicationContainer
 QuicClientHelper::Install (NodeContainer c)

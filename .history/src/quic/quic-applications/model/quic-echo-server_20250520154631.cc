@@ -57,7 +57,7 @@ QuicEchoServer::GetTypeId (void)
                    // 关联到成员变量 m_port
                    MakeUintegerAccessor (&QuicEchoServer::m_port),
                    MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("StreamId", // 流 ID
+    .AddAttribute ("StreamId",
                    "Identifier of the stream to be used in the QUIC connection",
                    UintegerValue (2),
                    MakeUintegerAccessor (&QuicEchoServer::GetStreamId,

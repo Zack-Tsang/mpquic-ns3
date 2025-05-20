@@ -189,9 +189,6 @@ QuicEchoClientHelper::Install (std::string nodeName) const
   return ApplicationContainer (InstallPriv (node));
 }
 
-/**
- * zhiy zeng: 将QuicEchoClientHelper安装到多个节点
- */
 ApplicationContainer
 QuicEchoClientHelper::Install (NodeContainer c) const
 {
@@ -204,11 +201,6 @@ QuicEchoClientHelper::Install (NodeContainer c) const
   return apps;
 }
 
-/**
- * zhiy zeng: 私有安装函数
-  * 创建并安装一个 QuicEchoClient 到指定节点
-  * 添加日志信息以便调试
- */
 Ptr<Application>
 QuicEchoClientHelper::InstallPriv (Ptr<Node> node) const
 {

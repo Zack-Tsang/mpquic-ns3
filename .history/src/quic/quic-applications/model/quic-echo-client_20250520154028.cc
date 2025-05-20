@@ -35,12 +35,7 @@
 
 /**
  * zhiy zeng: QuicEchoClient 类的完整实现，它继承自 NS-3 的 Application 基类，
-  * 能够发送数据包到指定的服务器地址，并处理接收到的数据
-  * 主要功能包括：
-    参数配置：通过属性系统设置最大发送包数、发送间隔、目标地址、端口等。
-    数据发送：创建并发送 QUIC 流数据，支持自定义数据内容和大小。
-    数据接收：接收服务器响应并输出日志。
-    连接管理：支持连接的关闭、重启等操作。
+ * 能够发送数据包到指定的服务器地址，并处理接收到的数据
  */
 namespace ns3 {
 
@@ -73,18 +68,17 @@ QuicEchoClient::GetTypeId (void)
                     // 关联到成员变量 m_peerAddress
                    MakeAddressAccessor (&QuicEchoClient::m_peerAddress),
                    MakeAddressChecker ())
-    .AddAttribute ("RemotePort", // 目的端口
+    .AddAttribute ("RemotePort",
                    "The destination port of the outbound packets",
                    UintegerValue (0),
-                   // 关联到成员变量 m_peerPort
                    MakeUintegerAccessor (&QuicEchoClient::m_peerPort),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("PacketSize", "Size of echo data in outbound packets",
-                   UintegerValue (100), // 数据包大小
+                   UintegerValue (100),
                    MakeUintegerAccessor (&QuicEchoClient::GetDataSize,
                                          &QuicEchoClient::SetDataSize),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("StreamId", // 流 ID
+    .AddAttribute ("StreamId",
                    "Identifier of the stream to be used in the QUIC connection",
                    UintegerValue (2),
                    MakeUintegerAccessor (&QuicEchoClient::GetStreamId,

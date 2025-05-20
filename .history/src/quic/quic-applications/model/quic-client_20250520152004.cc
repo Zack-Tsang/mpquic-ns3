@@ -211,9 +211,6 @@ QuicClient::StopApplication (void)
     }
 }
 
-/**
- * zhiy zeng: 数据发送
- */
 void
 QuicClient::Send (void)
 {
@@ -221,7 +218,6 @@ QuicClient::Send (void)
   NS_ASSERT (m_sendEvent.IsExpired ());
   SeqTsHeader seqTs;
   seqTs.SetSeq (m_sent);
-  // 创建数据包
   Ptr<Packet> p = Create<Packet> (m_size); // 8+4 : the size of the seqTs header
   // p->AddHeader (seqTs);
 
@@ -234,7 +230,7 @@ QuicClient::Send (void)
     {
       peerAddressStringStream << Ipv6Address::ConvertFrom (m_peerAddress);
     }
-  // 在指定流上发送数据
+
   if ((m_socket->Send (p, m_lastUsedStream)) >= 0)
     {
       ++m_sent;
@@ -252,14 +248,13 @@ QuicClient::Send (void)
 
   // apply a round robin policy for the streams (i.e., one packet per stream)
   m_lastUsedStream++;
-  if (m_lastUsedStream > m_numStreams) 
+  if (m_lastUsedStream > m_numStreams)
     {
       m_lastUsedStream = 1;
     }
 
-  if (m_sent < m_count) // 发送的包数小于最大包数
+  if (m_sent < m_count)
     {
-      // 继续调度下一次发送
       m_sendEvent = Simulator::Schedule (m_interval, &QuicClient::Send, this);
     }
 }

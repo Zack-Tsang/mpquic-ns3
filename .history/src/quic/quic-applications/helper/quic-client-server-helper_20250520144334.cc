@@ -23,13 +23,6 @@
 #include "ns3/uinteger.h"
 #include "ns3/string.h"
 
-/**
- * NS-3 中 QUIC 协议的客户端和服务器辅助类，用于简化在仿真中
- * 创建 QUIC 客户端和服务端应用程序的过程。它们属于 ns3 命名
- * 空间，使用了 NS-3 的对象工厂机制（ObjectFactory）来实例化
- *  QUIC 应用程序。
- */
-
 namespace ns3 {
 
 /**
@@ -51,19 +44,12 @@ QuicServerHelper::QuicServerHelper (uint16_t port)
   SetAttribute ("Port", UintegerValue (port));
 }
 
-/**
- * zhiy zeng: 用于设置 QUIC 服务端的任意属性
- */
 void
 QuicServerHelper::SetAttribute (std::string name, const AttributeValue &value)
 {
   m_factory.Set (name, value);
 }
 
-/**
- * zhiy zeng: 在给定节点上安装 QUIC 服务端应用
-  * 返回 ApplicationContainer，可用于后续控制或查询状态
- */
 ApplicationContainer
 QuicServerHelper::Install (NodeContainer c)
 {
@@ -80,27 +66,17 @@ QuicServerHelper::Install (NodeContainer c)
   return apps;
 }
 
-/**
- * zhiy zeng: 返回最后一次创建的 QuicServer 实例
-  * 可用于直接调用服务端的方法或获取其状态
- */
 Ptr<QuicServer>
 QuicServerHelper::GetServer (void)
 {
   return m_server;
 }
 
-/**
- * zhiy zeng: QuicClientHelper类的默认构造函数
- */
 QuicClientHelper::QuicClientHelper ()
 {
   m_factory.SetTypeId (QuicClient::GetTypeId ());
 }
 
-/**
- * zhiy zeng: QuicClientHelper类指定地址和端口的构造函数
- */
 QuicClientHelper::QuicClientHelper (Address address, uint16_t port)
 {
   m_factory.SetTypeId (QuicClient::GetTypeId ());
@@ -108,28 +84,18 @@ QuicClientHelper::QuicClientHelper (Address address, uint16_t port)
   SetAttribute ("RemotePort", UintegerValue (port));
 }
 
-/**
- * zhiy zeng: QuicClientHelper类指定地址的构造函数
- */
 QuicClientHelper::QuicClientHelper (Address address)
 {
   m_factory.SetTypeId (QuicClient::GetTypeId ());
   SetAttribute ("RemoteAddress", AddressValue (address));
 }
 
-/**
- * zhiy zeng: 用于设置 QUIC 客户端的任意属性
- */
 void
 QuicClientHelper::SetAttribute (std::string name, const AttributeValue &value)
 {
   m_factory.Set (name, value);
 }
 
-/**
- * zhiy zeng: 在给定节点上安装 QUIC 客户端应用
-  * 返回 所有客户端组成的容器，可用于后续控制或查询状态
- */
 ApplicationContainer
 QuicClientHelper::Install (NodeContainer c)
 {

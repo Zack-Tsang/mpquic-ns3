@@ -34,11 +34,6 @@
 
 #include "quic-echo-server.h"
 
-/**
- * zhiy zeng: QuicEchoServer 类的完整实现，它继承自 NS-3 的 Application 基类，
-  * 用于模拟一个基于 QUIC 协议的回显服务器。该服务器接收客户端发送的数据包，并将
-  * 其原样返回（即“echo”）
- */
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("QuicEchoServerApplication");
@@ -53,11 +48,10 @@ QuicEchoServer::GetTypeId (void)
     .SetGroupName ("Applications")
     .AddConstructor<QuicEchoServer> ()
     .AddAttribute ("Port", "Port on which we listen for incoming packets.",
-                   UintegerValue (9), // 监听端口号, 默认值为 9
-                   // 关联到成员变量 m_port
+                   UintegerValue (9),
                    MakeUintegerAccessor (&QuicEchoServer::m_port),
                    MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("StreamId", // 流 ID
+    .AddAttribute ("StreamId",
                    "Identifier of the stream to be used in the QUIC connection",
                    UintegerValue (2),
                    MakeUintegerAccessor (&QuicEchoServer::GetStreamId,

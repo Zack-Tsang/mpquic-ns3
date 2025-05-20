@@ -204,9 +204,6 @@ QuicServer::StopApplication ()
     }
 }
 
-/**
- * zhiy zeng: 循环接收所有可用数据包
- */
 void
 QuicServer::HandleRead (Ptr<Socket> socket)
 {

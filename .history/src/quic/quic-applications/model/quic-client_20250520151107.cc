@@ -100,17 +100,11 @@ QuicClient::QuicClient ()
   m_sendEvent = EventId ();
 }
 
-/**
- * zhiy zeng: 析构函数，释放资源
- */
 QuicClient::~QuicClient ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-/**
- * zhiy zeng: 设置目标地址和端口
- */
 void
 QuicClient::SetRemote (Address ip, uint16_t port)
 {
@@ -126,9 +120,6 @@ QuicClient::SetRemote (Address addr)
   m_peerAddress = addr;
 }
 
-/**
- * zhiy zeng: 资源清理
- */
 void
 QuicClient::DoDispose (void)
 {
@@ -136,9 +127,6 @@ QuicClient::DoDispose (void)
   Application::DoDispose ();
 }
 
-/**
- * zhiy zeng: 启动QUIC Client应用程序
- */
 void
 QuicClient::StartApplication (void)
 {
@@ -147,9 +135,7 @@ QuicClient::StartApplication (void)
   if (m_socket == 0)
     {
       TypeId tid = TypeId::LookupByName ("ns3::QuicSocketFactory");
-      // 创建 QUIC socket
       m_socket = Socket::CreateSocket (GetNode (), tid);
-      // 根据地址类型绑定和连接
       if (Ipv4Address::IsMatchingType (m_peerAddress) == true)
         {
           if (m_socket->Bind () == -1)
@@ -187,18 +173,12 @@ QuicClient::StartApplication (void)
           NS_ASSERT_MSG (false, "Incompatible address type: " << m_peerAddress);
         }
     }
-  // 设置 socket 回调（当前为 null callback）
+
   m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
   m_socket->SetAllowBroadcast (true);
-  // 调度第一个 Send() 事件
   m_sendEvent = Simulator::Schedule (Seconds (0), &QuicClient::Send, this);
 }
 
-/**
- * zhiy zeng: 停止 QUIC Client 应用程序
-  * 取消未执行的发送事件
-  * 关闭 socket
- */
 void
 QuicClient::StopApplication (void)
 {
@@ -211,9 +191,6 @@ QuicClient::StopApplication (void)
     }
 }
 
-/**
- * zhiy zeng: 数据发送
- */
 void
 QuicClient::Send (void)
 {
@@ -221,7 +198,6 @@ QuicClient::Send (void)
   NS_ASSERT (m_sendEvent.IsExpired ());
   SeqTsHeader seqTs;
   seqTs.SetSeq (m_sent);
-  // 创建数据包
   Ptr<Packet> p = Create<Packet> (m_size); // 8+4 : the size of the seqTs header
   // p->AddHeader (seqTs);
 
@@ -234,7 +210,7 @@ QuicClient::Send (void)
     {
       peerAddressStringStream << Ipv6Address::ConvertFrom (m_peerAddress);
     }
-  // 在指定流上发送数据
+
   if ((m_socket->Send (p, m_lastUsedStream)) >= 0)
     {
       ++m_sent;
@@ -252,14 +228,13 @@ QuicClient::Send (void)
 
   // apply a round robin policy for the streams (i.e., one packet per stream)
   m_lastUsedStream++;
-  if (m_lastUsedStream > m_numStreams) 
+  if (m_lastUsedStream > m_numStreams)
     {
       m_lastUsedStream = 1;
     }
 
-  if (m_sent < m_count) // 发送的包数小于最大包数
+  if (m_sent < m_count)
     {
-      // 继续调度下一次发送
       m_sendEvent = Simulator::Schedule (m_interval, &QuicClient::Send, this);
     }
 }

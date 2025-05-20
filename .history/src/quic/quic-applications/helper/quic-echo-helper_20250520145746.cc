@@ -204,11 +204,6 @@ QuicEchoClientHelper::Install (NodeContainer c) const
   return apps;
 }
 
-/**
- * zhiy zeng: 私有安装函数
-  * 创建并安装一个 QuicEchoClient 到指定节点
-  * 添加日志信息以便调试
- */
 Ptr<Application>
 QuicEchoClientHelper::InstallPriv (Ptr<Node> node) const
 {

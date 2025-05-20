@@ -96,7 +96,7 @@ QuicServer::~QuicServer ()
 }
 
 /**
- * zhiy zeng: 获取m_lossCounter 的窗口大小
+ * zhiy zeng: 获取m_lossCounter 的窗口
  */
 uint16_t
 QuicServer::GetPacketWindowSize () const
@@ -106,7 +106,7 @@ QuicServer::GetPacketWindowSize () const
 }
 
 /**
- * zhiy zeng: 设置m_lossCounter 的窗口大小
+ * zhiy zeng: 设置m_lossCounter 的窗口
  */
 void
 QuicServer::SetPacketWindowSize (uint16_t size)
@@ -115,9 +115,6 @@ QuicServer::SetPacketWindowSize (uint16_t size)
   m_lossCounter.SetBitMapSize (size);
 }
 
-/**
- * zhiy zeng: 获取丢包数量
- */
 uint32_t
 QuicServer::GetLost (void) const
 {
@@ -125,9 +122,6 @@ QuicServer::GetLost (void) const
   return m_lossCounter.GetLost ();
 }
 
-/**
- * zhiy zeng: 获取接收的包数量
- */
 uint64_t
 QuicServer::GetReceived (void) const
 {
@@ -135,9 +129,6 @@ QuicServer::GetReceived (void) const
   return m_received;
 }
 
-/**
- * zhiy zeng: 资源清理
- */
 void
 QuicServer::DoDispose (void)
 {
@@ -145,12 +136,6 @@ QuicServer::DoDispose (void)
   Application::DoDispose ();
 }
 
-/**
- * zhiy zeng: 启动QUIC Server应用程序
-  * 创建 IPv4 QUIC socket 并绑定任意地址 + 端口
-  * 开始监听连接
-  * 设置接收回调
- */
 void
 QuicServer::StartApplication (void)
 {
@@ -188,11 +173,6 @@ QuicServer::StartApplication (void)
 
 }
 
-/**
- * zhiy zeng: 停止QUIC Server应用程序
-  * 移除接收回调
-  * 不主动关闭 socket（由系统自动管理
- */
 void
 QuicServer::StopApplication ()
 {
@@ -204,9 +184,6 @@ QuicServer::StopApplication ()
     }
 }
 
-/**
- * zhiy zeng: 循环接收所有可用数据包
- */
 void
 QuicServer::HandleRead (Ptr<Socket> socket)
 {

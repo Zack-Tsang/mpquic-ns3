@@ -234,7 +234,7 @@ QuicClient::Send (void)
     {
       peerAddressStringStream << Ipv6Address::ConvertFrom (m_peerAddress);
     }
-  // 在指定流上发送数据
+
   if ((m_socket->Send (p, m_lastUsedStream)) >= 0)
     {
       ++m_sent;
@@ -252,14 +252,13 @@ QuicClient::Send (void)
 
   // apply a round robin policy for the streams (i.e., one packet per stream)
   m_lastUsedStream++;
-  if (m_lastUsedStream > m_numStreams) 
+  if (m_lastUsedStream > m_numStreams)
     {
       m_lastUsedStream = 1;
     }
 
-  if (m_sent < m_count) // 发送的包数小于最大包数
+  if (m_sent < m_count)
     {
-      // 继续调度下一次发送
       m_sendEvent = Simulator::Schedule (m_interval, &QuicClient::Send, this);
     }
 }

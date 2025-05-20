@@ -129,9 +129,6 @@ QuicEchoClientHelper::QuicEchoClientHelper (Address address)
   SetAttribute ("RemoteAddress", AddressValue (address));
 }
 
-/**
- * zhiy zeng: 设置客户端任意可配置属性
- */
 void
 QuicEchoClientHelper::SetAttribute (
   std::string name,
@@ -140,48 +137,30 @@ QuicEchoClientHelper::SetAttribute (
   m_factory.Set (name, value);
 }
 
-/**
- * zhiy zeng: 数据填充设置方法, 允许用户配置客户端发送的数据内容
-  * 固定字符串
- */
 void
 QuicEchoClientHelper::SetFill (Ptr<Application> app, std::string fill)
 {
   app->GetObject<QuicEchoClient>()->SetFill (fill);
 }
 
-/**
- * zhiy zeng: 数据填充设置方法, 允许用户配置客户端发送的数据内容
-  * 固定字节
- */
 void
 QuicEchoClientHelper::SetFill (Ptr<Application> app, uint8_t fill, uint32_t dataLength)
 {
   app->GetObject<QuicEchoClient>()->SetFill (fill, dataLength);
 }
 
-/**
- * zhiy zeng: 数据填充设置方法, 允许用户配置客户端发送的数据内容
-  * 固定字节数组
- */
 void
 QuicEchoClientHelper::SetFill (Ptr<Application> app, uint8_t *fill, uint32_t fillLength, uint32_t dataLength)
 {
   app->GetObject<QuicEchoClient>()->SetFill (fill, fillLength, dataLength);
 }
 
-/**
- * zhiy zeng: 将QuicEchoClientHelper安装到单个节点
- */
 ApplicationContainer
 QuicEchoClientHelper::Install (Ptr<Node> node) const
 {
   return ApplicationContainer (InstallPriv (node));
 }
 
-/**
- * zhiy zeng: 将QuicEchoClientHelper安装到命名节点
- */
 ApplicationContainer
 QuicEchoClientHelper::Install (std::string nodeName) const
 {
@@ -189,9 +168,6 @@ QuicEchoClientHelper::Install (std::string nodeName) const
   return ApplicationContainer (InstallPriv (node));
 }
 
-/**
- * zhiy zeng: 将QuicEchoClientHelper安装到多个节点
- */
 ApplicationContainer
 QuicEchoClientHelper::Install (NodeContainer c) const
 {
@@ -204,11 +180,6 @@ QuicEchoClientHelper::Install (NodeContainer c) const
   return apps;
 }
 
-/**
- * zhiy zeng: 私有安装函数
-  * 创建并安装一个 QuicEchoClient 到指定节点
-  * 添加日志信息以便调试
- */
 Ptr<Application>
 QuicEchoClientHelper::InstallPriv (Ptr<Node> node) const
 {

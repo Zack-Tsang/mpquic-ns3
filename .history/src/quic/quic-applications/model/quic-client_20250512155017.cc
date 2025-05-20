@@ -33,53 +33,43 @@
 #include <cstdlib>
 #include <cstdio>
 
-/**
- * zhiy zeng: QuicClient 类的完整实现，它继承自 NS-3 的 Application 基类，
-  * 封装了 QUIC 客户端的基本行为：连接、发送数据包、管理流（streams）、以及与
-  * socket 交互等。
- */
-
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("QuicClient");
 
 NS_OBJECT_ENSURE_REGISTERED (QuicClient);
 
-/**
- * zhiy zeng: 注册 QuicClient 类型并定义其可配置属性
- */
 TypeId
 QuicClient::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::QuicClient")
-    .SetParent<Application> () // 继承自 Application 基类
-    .SetGroupName ("Applications") // 设置分组名称
-    .AddConstructor<QuicClient> () // 添加构造函数
-    .AddAttribute ("MaxPackets", // 最大发包数
+    .SetParent<Application> ()
+    .SetGroupName ("Applications")
+    .AddConstructor<QuicClient> ()
+    .AddAttribute ("MaxPackets",
                    "The maximum number of packets the application will send",
                    UintegerValue (100),
                    MakeUintegerAccessor (&QuicClient::m_count),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("Interval", // 发包间隔时间
+    .AddAttribute ("Interval",
                    "The time to wait between packets", TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&QuicClient::m_interval),
                    MakeTimeChecker ())
-    .AddAttribute ("RemoteAddress", // 远程地址
+    .AddAttribute ("RemoteAddress",
                    "The destination Address of the outbound packets",
                    AddressValue (),
                    MakeAddressAccessor (&QuicClient::m_peerAddress),
                    MakeAddressChecker ())
-    // 目标端口
     .AddAttribute ("RemotePort", "The destination port of the outbound packets",
                    UintegerValue (100),
                    MakeUintegerAccessor (&QuicClient::m_peerPort),
                    MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("PacketSize", // 数据包大小
+    .AddAttribute ("PacketSize",
                    "Size of packets generated. The minimum packet size is 12 bytes which is the size of the header carrying the sequence number and the time stamp.",
                    UintegerValue (1024),
                    MakeUintegerAccessor (&QuicClient::m_size),
                    MakeUintegerChecker<uint32_t> (12,1500))
-    .AddAttribute ("NumStreams", // 使用的流数量
+    .AddAttribute ("NumStreams",
                    "Number of streams to be used in the underlying QUIC socket",
                    UintegerValue (1),
                    MakeUintegerAccessor (&QuicClient::m_numStreams),
@@ -88,29 +78,20 @@ QuicClient::GetTypeId (void)
   return tid;
 }
 
-/**
- * zhiy zeng: 构造函数，初始化成员变量
- */
 QuicClient::QuicClient ()
 {
   NS_LOG_FUNCTION (this);
-  m_sent = 0; // 发送的包计数器
-  m_socket = 0; // socket 指针
-  m_lastUsedStream = 1; // 上次使用的流 ID
+  m_sent = 0;
+  m_socket = 0;
+  m_lastUsedStream = 1;
   m_sendEvent = EventId ();
 }
 
-/**
- * zhiy zeng: 析构函数，释放资源
- */
 QuicClient::~QuicClient ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-/**
- * zhiy zeng: 设置目标地址和端口
- */
 void
 QuicClient::SetRemote (Address ip, uint16_t port)
 {
@@ -126,9 +107,6 @@ QuicClient::SetRemote (Address addr)
   m_peerAddress = addr;
 }
 
-/**
- * zhiy zeng: 资源清理
- */
 void
 QuicClient::DoDispose (void)
 {
@@ -136,9 +114,6 @@ QuicClient::DoDispose (void)
   Application::DoDispose ();
 }
 
-/**
- * zhiy zeng: 启动QUIC Client应用程序
- */
 void
 QuicClient::StartApplication (void)
 {
@@ -147,9 +122,7 @@ QuicClient::StartApplication (void)
   if (m_socket == 0)
     {
       TypeId tid = TypeId::LookupByName ("ns3::QuicSocketFactory");
-      // 创建 QUIC socket
       m_socket = Socket::CreateSocket (GetNode (), tid);
-      // 根据地址类型绑定和连接
       if (Ipv4Address::IsMatchingType (m_peerAddress) == true)
         {
           if (m_socket->Bind () == -1)
@@ -187,18 +160,12 @@ QuicClient::StartApplication (void)
           NS_ASSERT_MSG (false, "Incompatible address type: " << m_peerAddress);
         }
     }
-  // 设置 socket 回调（当前为 null callback）
+
   m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
   m_socket->SetAllowBroadcast (true);
-  // 调度第一个 Send() 事件
   m_sendEvent = Simulator::Schedule (Seconds (0), &QuicClient::Send, this);
 }
 
-/**
- * zhiy zeng: 停止 QUIC Client 应用程序
-  * 取消未执行的发送事件
-  * 关闭 socket
- */
 void
 QuicClient::StopApplication (void)
 {
@@ -211,9 +178,6 @@ QuicClient::StopApplication (void)
     }
 }
 
-/**
- * zhiy zeng: 数据发送
- */
 void
 QuicClient::Send (void)
 {
@@ -221,7 +185,6 @@ QuicClient::Send (void)
   NS_ASSERT (m_sendEvent.IsExpired ());
   SeqTsHeader seqTs;
   seqTs.SetSeq (m_sent);
-  // 创建数据包
   Ptr<Packet> p = Create<Packet> (m_size); // 8+4 : the size of the seqTs header
   // p->AddHeader (seqTs);
 
@@ -234,7 +197,7 @@ QuicClient::Send (void)
     {
       peerAddressStringStream << Ipv6Address::ConvertFrom (m_peerAddress);
     }
-  // 在指定流上发送数据
+
   if ((m_socket->Send (p, m_lastUsedStream)) >= 0)
     {
       ++m_sent;
@@ -252,14 +215,13 @@ QuicClient::Send (void)
 
   // apply a round robin policy for the streams (i.e., one packet per stream)
   m_lastUsedStream++;
-  if (m_lastUsedStream > m_numStreams) 
+  if (m_lastUsedStream > m_numStreams)
     {
       m_lastUsedStream = 1;
     }
 
-  if (m_sent < m_count) // 发送的包数小于最大包数
+  if (m_sent < m_count)
     {
-      // 继续调度下一次发送
       m_sendEvent = Simulator::Schedule (m_interval, &QuicClient::Send, this);
     }
 }
