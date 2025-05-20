@@ -1,0 +1,90 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+# def options(opt):
+#     pass
+
+# def configure(conf):
+#     conf.check_nonfatal(header_name='stdint.h', define_name='HAVE_STDINT_H')
+
+def build(bld):
+    // quic module dependencies, including internet, applications, flow-monitor, and point-to-point
+    // 声明 QUIC 模块作为 NS-3 的子模块，并指定其依赖的其他模块，确保编译时正确链接依赖库, zhiy zeng
+    module = bld.create_ns3_module('quic', ['internet', 'applications', 'flow-monitor', 'point-to-point'])
+    module.source = [
+        'model/quic-congestion-ops.cc', 
+        'model/quic-socket.cc', // 具体套接字实现
+        'model/quic-socket-base.cc', // 套接字基类
+        'model/quic-socket-factory.cc', // 套接字工厂（创建套接字实例）
+        // 核心协议实现, zhiy zeng
+        'model/quic-l4-protocol.cc', // QUIC 协议的 L4 层实现
+
+        // 缓冲区与调度器, zhiy zeng
+        'model/quic-socket-rx-buffer.cc', // 接收缓冲区
+        'model/quic-socket-tx-buffer.cc', // 发送缓冲区
+        'model/quic-socket-tx-scheduler.cc', // 发送调度器
+        'model/quic-socket-tx-pfifo-scheduler.cc', // PFIFO 调度器
+        'model/quic-socket-tx-edf-scheduler.cc', // EDF 调度器
+
+        // 流管理, zhiy zeng
+        'model/quic-stream.cc', // QUIC 流实现
+        'model/quic-stream-base.cc', // 流基类
+        'model/quic-l5-protocol.cc', // QUIC 五层协议 (应用层) 
+        'model/quic-stream-tx-buffer.cc', // 流发送缓冲区
+        'model/quic-stream-rx-buffer.cc', // 流接收缓冲区
+
+        // 协议头与参数
+        'model/quic-header.cc', // QUIC 协议头实现
+        'model/quic-subheader.cc', // QUIC 子头实现
+        'model/quic-transport-parameters.cc', // QUIC 传输参数实现
+
+        // 拥塞控制算法
+        'model/quic-bbr.cc', // BBR 拥塞控制算法实现
+        'model/mp-quic-subflow.cc',
+        'model/mp-quic-scheduler.cc',
+        'model/mp-quic-path-manager.cc',
+        'model/mp-quic-congestion-ops.cc',
+        'helper/quic-helper.cc'
+        ]
+
+    module_test = bld.create_ns3_module_test_library('quic')
+    module_test.source = [
+        'test/quic-rx-buffer-test.cc',
+        'test/quic-tx-buffer-test.cc',
+        'test/quic-header-test.cc',
+        ]
+
+    headers = bld(features='ns3header')
+    headers.module = 'quic'
+    headers.source = [
+        'model/quic-congestion-ops.h',
+        'model/quic-socket.h',
+        'model/quic-socket-base.h',
+        'model/quic-socket-factory.h',
+        'model/quic-l4-protocol.h',
+        'model/quic-socket-rx-buffer.h',
+        'model/quic-socket-tx-buffer.h',
+        'model/quic-socket-tx-scheduler.h',
+        'model/quic-socket-tx-pfifo-scheduler.h',
+        'model/quic-socket-tx-edf-scheduler.h',
+        'model/quic-stream.h',
+        'model/quic-stream-base.h',
+        'model/quic-l5-protocol.h',
+        'model/quic-stream-tx-buffer.h',
+        'model/quic-stream-rx-buffer.h',
+        'model/quic-header.h',
+        'model/quic-subheader.h',
+        'model/quic-transport-parameters.h',
+        'model/quic-bbr.h',
+        'helper/quic-helper.h',
+        'model/mp-quic-subflow.h',
+        'model/mp-quic-scheduler.h',
+        'model/mp-quic-path-manager.h',
+        'model/mp-quic-congestion-ops.h',
+        'model/windowed-filter.h'
+        ]
+
+    if bld.env.ENABLE_EXAMPLES:
+        bld.recurse('examples')
+
+    # bld.ns3_python_bindings()
+
